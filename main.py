@@ -1,49 +1,45 @@
-class Graph(): 
-    def __init__(self, vertices): 
-        self.V = vertices 
-        self.graph = [[0 for column in range(vertices)]  
-                    for row in range(vertices)] 
-  
-    def print_solution(self, dist): 
-        print("Vertex \tDistance from Source")
-        for node in range(self.V): 
-            print(node, "\t", dist[node])
-  
-
-    def min_distance(self, dist, sptSet): 
-        min = 9999
-        for v in range(self.V): 
-            if dist[v] < min and sptSet[v] == False: 
-                min = dist[v] 
-                min_index = v 
-  
-        return min_index 
-    
-    def add_edge(self, src, dest, weight):
-        self.graph[src][dest] = self.graph[dest][src] = weight
-
-    def dijkstra(self, src): 
-  
-        dist = [9999] * self.V 
+class Network:
+    def __init__(self,n):
+        self.matrix=[]
+        self.n=n 
+        
+    def addlink(self, u, v, w):  
+        self.matrix.append((u, v, w)) 
+        
+    def printtable(self, dist,src):
+        print("Vector Table of {}".format(chr(ord('A')+src)))
+        print("{0}\t{1}".format("Dest", "cost"))  
+        for i in range(self.n):  
+            print("{0}\t{1}".format(chr(ord('A')+i), dist[i]))  
+        
+    # Use Bellman Ford for weights   
+    def algo(self, src):  
+        
+        dist = [99] * self.n 
         dist[src] = 0
-        sptSet = [False] * self.V 
-  
-        for cout in range(self.V): 
-            u = self.min_distance(dist, sptSet) 
-            sptSet[u] = True
-            for v in range(self.V): 
-                if self.graph[u][v] > 0 and sptSet[v] == False and dist[v] > dist[u] + self.graph[u][v]: 
-                        dist[v] = dist[u] + self.graph[u][v] 
-  
-        self.print_solution(dist) 
 
-g = Graph(int(input("Enter number of nodes in the topology: ")))
-c = int(input("Enter number of edges: "))
+        for _ in range(self.n - 1):  
+            for u, v, w in self.matrix:  
+                if dist[u] != 99 and dist[u] + w < dist[v]:  
+                        dist[v] = dist[u] + w  
+        # print all distance  
+        self.printtable(dist,src)  
 
-for i in range(c):
-    src, dest, cost = [int(_) for _ in input("Enter [SRC] [DEST] [WEIGHT]: ").split(' ')]
-    g.add_edge(src, dest, cost)
 
-src = int(input("Enter [SRC] to find costs: "))
-
-g.dijkstra(src)
+def main():
+    matrix=[]
+    print("Enter No. of Nodes : ")
+    n=int(input())
+    print("Enter the Adjacency Matrix :")
+    for i in range(n):
+        m=list(map(int,input().split(" ")))
+        matrix.append(m)
+    g=Network(n)
+    for i in range(n):
+        for j in range(n):
+            if matrix[i][j]==1:
+                g.addlink(i,j,1)
+    
+    for _ in range(n):
+        g.algo(_)
+main()
